@@ -109,7 +109,7 @@ class BacktestEngine:
         exit_reason = None
         exit_price = None
         
-        # Check stop loss
+        # Check stop loss and take profit
         if self.current_position['type'] == 'long':
             if row['ha_low'] <= self.current_position['stop_loss']:
                 exit_reason = 'stop_loss'
@@ -117,7 +117,8 @@ class BacktestEngine:
             elif row['ha_high'] >= self.current_position['take_profit']:
                 exit_reason = 'take_profit'
                 exit_price = self.current_position['take_profit']
-            elif row['color'] == 'red':
+            # Check for signal exit if color column is available
+            elif 'color' in row and row['color'] == 'red':
                 exit_reason = 'signal_exit'
                 exit_price = row['ha_close']
         else:  # short
@@ -127,7 +128,8 @@ class BacktestEngine:
             elif row['ha_low'] <= self.current_position['take_profit']:
                 exit_reason = 'take_profit'
                 exit_price = self.current_position['take_profit']
-            elif row['color'] == 'green':
+            # Check for signal exit if color column is available
+            elif 'color' in row and row['color'] == 'green':
                 exit_reason = 'signal_exit'
                 exit_price = row['ha_close']
         

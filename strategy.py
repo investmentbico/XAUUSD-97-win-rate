@@ -13,8 +13,10 @@ class HeikinAshiStrategy:
     Simple Heikin Ashi trading strategy.
     
     Entry Rules:
-    - LONG: Two consecutive green candles with no lower shadows
-    - SHORT: Two consecutive red candles with no upper shadows
+    - LONG: Current and previous candle are green (2nd and 3rd in sequence), 
+            and the candle before that was not green (transition to uptrend)
+    - SHORT: Current and previous candle are red (2nd and 3rd in sequence),
+             and the candle before that was not red (transition to downtrend)
     
     Exit Rules:
     - LONG: First red candle or stop loss/take profit
