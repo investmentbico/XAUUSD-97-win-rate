@@ -6,9 +6,11 @@ with 1-minute timeframe.
 """
 
 import pandas as pd
+import sys
+import os
 from datetime import datetime
 
-from data_loader import generate_sample_data, validate_ohlc_data
+from data_loader import generate_sample_data, validate_ohlc_data, load_csv_data
 from heikin_ashi import calculate_heikin_ashi
 from strategy import HeikinAshiStrategy
 from backtest_engine import BacktestEngine
@@ -59,9 +61,12 @@ def print_results(results):
         print_separator()
 
 
-def main():
+def main(csv_file=None):
     """
     Main execution function.
+    
+    Args:
+        csv_file: Optional path to CSV file with OHLC data
     """
     print("\n" + "=" * 70)
     print("XAUUSD HEIKIN ASHI BACKTESTING - 1 MINUTE TIMEFRAME")
@@ -75,9 +80,14 @@ def main():
     
     # Step 1: Load or generate data
     print("\n[1/5] Loading market data...")
-    # For this smoke code, we generate sample data
-    # In production, you would load real data from CSV or API
-    df = generate_sample_data(num_candles=2000, start_price=2000.0)
+    if csv_file and os.path.exists(csv_file):
+        print(f"Loading data from {csv_file}...")
+        df = load_csv_data(csv_file)
+    else:
+        # For this smoke code, we generate sample data
+        # In production, you would load real data from CSV or API
+        print("Generating sample data...")
+        df = generate_sample_data(num_candles=2000, start_price=2000.0)
     print(f"✓ Loaded {len(df)} candles")
     
     # Step 2: Validate data
@@ -118,4 +128,13 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # Check if CSV file is provided as command line argument
+    csv_file = sys.argv[1] if len(sys.argv) > 1 else None
+    
+    if csv_file and not os.path.exists(csv_file):
+        print(f"Error: File '{csv_file}' not found.")
+        print("Usage: python main.py [csv_file]")
+        print("  If no CSV file is provided, sample data will be generated.")
+        sys.exit(1)
+    
+    main(csv_file)
